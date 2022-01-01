@@ -121,7 +121,7 @@ float rad2deg(float radians)
     return 180 / M_PI * radians;
 }
 
-bool is_desired_vector_and_have_proximity_angles(sample *samples, float desired_x, float desired_y)
+bool is_desired_vector_and_have_proximity_angles(sample *samples, float desired_x, float desired_y, float *desired_angles)
 {
 
     if (samples[0].features[0] != desired_x || samples[0].features[1] != desired_y)
@@ -140,11 +140,58 @@ bool is_desired_vector_and_have_proximity_angles(sample *samples, float desired_
     if (diference_phi != 10 || difefence_gamma != 10)
         return false;
 
+    /*
+     não tem como saber se phi vai ser o angulo mais a direita ou esquerda, então verifico os dois
+     por exemplo, se theta for 20 graus,
+     phi pode ser 10, ou 30 graus e gamma pode ser 10 ou 30 graus
+    */
+    if ((int)phi != desired_angles[0] && (int)phi != desired_angles[1])
+        return false;
+
+    if ((int)gamma != desired_angles[0] && (int)gamma != desired_angles[1])
+        return false;
+
     return true;
 }
 
 bool test_find_nearest_2d()
 {
+
+    /*
+             . .
+           .     .
+           .     .
+             . .
+
+        basicamente crio uma sequência de valores x,y, que representam
+        as coordenas cardesianas de um raio unitário + uma direção.
+        x = 1*cos(10 graus)
+        y = 1*sin(10 graus)
+
+        x = 1*cos(20 graus)
+        y = 1*sin(20 graus)
+
+        x = 1*cos(30 graus)
+        y = 1*sin(30 graus)
+
+             .... 
+
+        x = 1*cos(90 graus)
+        y = 1*sin(90 graus)
+
+        Perceba que:
+             10  20  30
+             40  50  60
+             70  80  90
+        
+        se buscarmos o x,y de 20 graus, os 2 valores mais próximos serão 10 e 30
+        se buscarmos o x,y de 50 graus, os 2 valores mais próximos serão 40 e 60
+        e que obviamente o intervalo entre eles é 10 graus. Então se buscarmos as 3
+        amostras (samples) mais próximas do que 20 graus, então a resposta deve retornar
+        os valors x,y de 20 graus e 10 e 30.
+
+    */
+
     dataset set = empty_dataset();
 
     for (int i = 0; i < 9; i++)
@@ -155,9 +202,10 @@ bool test_find_nearest_2d()
         set.samples[i].features[1] = sin(deg2rad(angle_in_degree));
     }
 
-   
     float input_query_x[3] = {cos(deg2rad(20)), cos(deg2rad(50)), cos(deg2rad(80))};
     float input_query_y[3] = {sin(deg2rad(20)), sin(deg2rad(50)), sin(deg2rad(80))};
+
+    float desired_angles[3][2] = {{10, 30}, {40, 60}, {70, 90}};
 
     uint8_t k_nearest = 3;
     sample samples[k_nearest];
@@ -169,7 +217,7 @@ bool test_find_nearest_2d()
         query[0] = input_query_x[i];
         query[1] = input_query_y[i];
         find_k_nearest(&set, query, samples, k_nearest);
-        if (is_desired_vector_and_have_proximity_angles(samples, input_query_x[i], input_query_y[i]) == false)
+        if (is_desired_vector_and_have_proximity_angles(samples, input_query_x[i], input_query_y[i], desired_angles[i]) == false)
         {
             float output_angle = rad2deg(atan(samples[0].features[1] / samples[0].features[0]));
             float intput_angle = rad2deg(atan(query[1] / query[0]));
