@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "math.h": "c",
+        "knn.h": "c",
+        "*.ipp": "c",
+        "*.tcc": "c",
+        "algorithm": "c",
+        "iterator": "c",
+        "memory": "c",
+        "random": "c",
+        "slist": "c",
+        "functional": "c",
+        "dataset.h": "c",
+        "chosen.h": "c",
+        "stdint.h": "c"
+    },
+    "cSpell.words": [
+        "ZYGOMATICUS"
+    ]
+}
