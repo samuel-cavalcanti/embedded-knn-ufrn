@@ -12,7 +12,8 @@
         "functional": "c",
         "dataset.h": "c",
         "chosen.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "hardware_abstraction_layer.h": "c"
     },
     "cSpell.words": [
         "ZYGOMATICUS"

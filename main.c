@@ -1,6 +1,6 @@
 #include "knn/knn.h"
 #include "dataset/dataset.h"
-#include "hardware_abstraction_layer/hardware_abstraction_layer.h"
+#include "hardware/hardware_abstraction_layer.h"
 
 typedef enum Label
 {
