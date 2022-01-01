@@ -11,7 +11,7 @@ en vista que desejamos que ele execute em um sistema embarcado.
 Para executar os testes precisa-se ter instalado:
 
 - gcc 
-- avr-gcc (compilador c/C++ para atmega)
+- avr-gcc (compilador C/C++ para atmega)
 
 ```shell
 chmod +x run_tests.sh
