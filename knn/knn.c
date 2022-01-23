@@ -64,7 +64,8 @@ float euclidean_distance(float *signal_a, float *signal_b)
     float distance = 0;
 
     for (int i = 0; i < SAMPLE_SIZE; i++)
-        distance += sqrt(pow(signal_a[i] - signal_b[i], 2));
+        distance += pow(signal_a[i] - signal_b[i], 2);
 
-    return distance;
+
+    return sqrt(distance);
 }
