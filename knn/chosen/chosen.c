@@ -18,7 +18,7 @@ chosen new_chosen(uint8_t size)
 bool is_in_chosen(chosen *self, uint16_t index)
 {
 
-    for (int i = 0; i < self->size; i++)
+    for (int i = 0; i < self->current_index; i++)
         if (self->array[i] == index)
             return true;
 
