@@ -28,10 +28,26 @@ Respiration sensor. The expansion and contraction of the chest cavity can be mea
 float read_respiration_sensor_in_percentage();
 
 /*
+    Duty Cycle deve ser um valor entre 0 até 1,
+    onde no caso do atmega328P será convertido em um valor inteiro
+    entre o até 255
+*/
+void write_amusing_led(float duty_cycle);
+void write_boring_led(float duty_cycle);
+void write_relaxing_led(float duty_cycle);
+void write_scary_led(float duty_cycle);
+void write_undefined_led(float duty_cycle);
+
+/*
+    Uma vez que o Arduino Uno não é possível de fazer 9 leituras analógicas então foi escolhido os 4 primeiros sensores.
+    e desabilitado as outras leituras.
+*/
+
+/*
 Skin temperature sensor. Small variations in skin temperature were measured and converted to electrical signals
 using an epoxy rod thermistor.
 */
-float read_skin_temperature_in_celsius();
+//float read_skin_temperature_in_celsius();
 
 /*
 EMG sensors. The surface voltage associated with muscle contractions can be measured using a
@@ -58,14 +74,14 @@ of the pre-gelled electrodes for these sensors are as follows:
     tall adult.
 */
 
-typedef enum MuscleSensorType
-{
-    ZYGOMATICUS,
-    SUPERCILII,
-    TRAPEZIUS
-} MuscleSensorType;
+// typedef enum MuscleSensorType
+// {
+//     ZYGOMATICUS,
+//     SUPERCILII,
+//     TRAPEZIUS
+// } MuscleSensorType;
 
-float read_muscle_sensor_in_microcoulomb(int type);
+// float read_muscle_sensor_in_microcoulomb(int type);
 
 /*
 Joystick. The joystick was the only instrument in the experiment that is directly controlled by the participants.
@@ -73,4 +89,4 @@ The used joystick is a generic digital gaming peripheral that features a return 
 feedback about the location of the pointer in the interface, thereby helping to mitigate the cognitive
 load associated with simultaneous tasks of watching the video and annotating the emotional experience.
 */
-float read_joytick(); // 
+// float read_joytick(); //

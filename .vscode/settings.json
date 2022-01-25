@@ -13,7 +13,8 @@
         "dataset.h": "c",
         "chosen.h": "c",
         "stdint.h": "c",
-        "hardware_abstraction_layer.h": "c"
+        "hardware_abstraction_layer.h": "c",
+        "stdbool.h": "c"
     },
     "cSpell.words": [
         "ZYGOMATICUS"

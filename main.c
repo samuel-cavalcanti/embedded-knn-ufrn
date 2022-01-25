@@ -4,75 +4,59 @@
 
 typedef enum Label
 {
-    AMUSING = 1,
-    BORING,
-    RELAXING,
-    SCARY,
-    UNDEFINED
+    AMUSING = 0,
+    BORING =1,
+    RELAXING =2,
+    SCARY = 3,
+    UNDEFINED=4,
 
 } Label;
 
-typedef enum Spys
-{
-    RUSSIANS,
-    CHINESE,
-    AMERICANS,
-    GERMANS
-
-} Spys;
-
-void send_data(float *input, Label user_status, Spys spy_countries);
 
 int main(void)
 {
 
     dataset set;
-    float input[9];
-    uint8_t k_nearest = 1;
-    sample samples[k_nearest];
+    float input[4];
+    uint8_t K_NEAREST = 1;
+    sample samples[K_NEAREST];
 
     hadware_setup();
 
     for (;;)
     {
-        input[0] = read_heart_beat_in_millivolts();
-        input[1] = read_blood_volume_pulse_in_percentage();
-        input[2] = read_galvanic_skin_response_in_microsecond();
-        input[3] = read_respiration_sensor_in_percentage();
-        input[4] = read_skin_temperature_in_celsius();
-        input[5] = read_muscle_sensor_in_microcoulomb(ZYGOMATICUS);
-        input[6] = read_muscle_sensor_in_microcoulomb(SUPERCILII);
-        input[7] = read_muscle_sensor_in_microcoulomb(TRAPEZIUS);
-        input[8] = read_joytick();
-        find_k_nearest(&set, input, samples, k_nearest);
+        /*
+    	Apesar dos sensores emitirem diferentes valores,
+        nessa simulação são 5 potenciômetros que variam de 0 até 5V.
+        Portanto para normalizar é só dividir por 5.0
+    */
+	input[0] = read_heart_beat_in_millivolts()/5.0;
+    input[1] = read_blood_volume_pulse_in_percentage()/5.0;
+    input[2] = read_galvanic_skin_response_in_microsecond()/5.0;
+    input[3] = read_respiration_sensor_in_percentage()/5.0;
+  	
+  	// Serial.println("Input");
+	// print_signal(input);
 
-        switch (samples[0].label)
-        {
-        case AMUSING:
-            send_data(input, samples[0].label, RUSSIANS);
-            break;
+    float mean_values[K_NEAREST];
+  	
+  	find_k_nearest(&set, input, samples, K_NEAREST);
+    for (uint8_t i =0; i < K_NEAREST; i++ )
+    {
+      mean_values[samples[i].label] +=1.0/K_NEAREST;
+    }
 
-        case BORING:
-            send_data(input, samples[0].label, AMERICANS);
-            break;
 
-        case RELAXING:
-            send_data(input, samples[0].label, CHINESE);
-            break;
+    // pwm
+    write_amusing_led(mean_values[AMUSING]);
+    write_boring_led(mean_values[BORING]);
+    write_relaxing_led(mean_values[RELAXING]);
+    write_scary_led(mean_values[SCARY]);
+    write_undefined_led(mean_values[UNDEFINED]);
 
-        case SCARY:
-            send_data(input, samples[0].label, GERMANS); //7x1
-
-            break;
-
-        case UNDEFINED:
-            break;
-        }
+       
     }
 
     return 0;
 }
 
-void send_data(float *input, Label user_status, Spys spy_countries)
-{
-}
