@@ -8,8 +8,8 @@ gcc tests/test_knn.c knn/chosen/chosen.c knn/chosen/chosen.h  knn/knn.c knn/knn.
 ./test_knn
 rm test_knn
 
-echo 'check compilation with avr'
-avr-gcc knn/chosen/chosen.c knn/chosen/chosen.h  knn/knn.c knn/knn.h dataset/dataset.h main.c -lm hardware/hardware_abstraction_layer.h hardware/arduino_uno.c -o avr_test
+echo 'check compilation with avr to atmega328p'
+avr-gcc knn/chosen/chosen.c knn/chosen/chosen.h  knn/knn.c knn/knn.h dataset/dataset.h main.c -lm hardware/hardware_abstraction_layer.h hardware/arduino_uno.c -mmcu=atmega328p  -o avr_test
 rm avr_test
 
 echo 'done'

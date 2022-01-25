@@ -1,4 +1,4 @@
-#define __AVR_ATmega328P__      // para visualizar melhor na IDE
+//#define __AVR_ATmega328P__      // para visualizar melhor na IDE
 #if defined(__AVR_ATmega328P__) // microcontrolador do arduino Uno
 
 #include "hardware_abstraction_layer.h"
@@ -13,7 +13,6 @@ void wait_to_analogic_digital_conversion_finish();
 
 void hadware_setup()
 {
-    
 
     /*
         Habilitando todas as portas C do atmega 328p que equivale as portas
@@ -74,77 +73,6 @@ void hadware_setup()
     ADCSRB = 0b00000001;
 
     /*
-    TCCRnA -- Timer /Counter Control n Register A
-
-    bit  7 -  COM0A1
-    bit  6 -  COM0A0
-    bit  5 -  COM0B1
-    bit  4 -  COM0B0
-    bit  3 -  ...
-    bit  2 -  ...
-    bit  1 -  WGM01
-    bit  0 -  WGM00
-
-    se COM0A1,COM0A0 = 00 então é a operação normal do pino, OC0A desconectado.
-    se COM0A1,COM0A0 = 01 operação normal do pino, OC0A desconectado.
-    se COM0A1,COM0A0 = 10 OC0A é limpo na igualdade de comparação. (modo não invertido) 
-    se COM0A1,COM0A0 = 11 OC0A é ativo na igualdade de comparação e limpo no valor de TC mínimo. (modo invertido) 
-
-    TCCRnB -- Timer /Counter Control n Register B
-
-    bit  7 -  FOC0A
-    bit  6 -  FOC0B
-    bit  5 -  ...
-    bit  4 -  ...
-    bit  3 -  WGM02
-    bit  2 -  CS02
-    bit  1 -  CS01
-    bit  0 -  CS00
-
-    FOC0A e FOC0B -  Force Output Compare A e B, quando modo não-PWM, força uma comparação no modulo gerador de onda
-
-    CS02,CS01,CS00 seleção do clock. Onde:
-    
-    CS02,CS01,CS00 = 000 , então sem Fonte de Clock (TC0 parado)
-    CS02,CS01,CS00 = 001 , prescaler = 1
-    CS02,CS01,CS00 = 010 , prescaler = 8 
-    CS02,CS01,CS00 = 011 , prescaler = 64 
-    CS02,CS01,CS00 = 100 , prescaler = 256  
-    CS02,CS01,CS00 = 101 , prescaler = 1024
-
-    CS02,CS01,CS00 = 110, Clock externo no pino T0. Contagem na borda de descida
-    CS02,CS01,CS00 = 111, Clock externo no pino T0. Contagem na borda de subida
-
-
-    então para configurar o PWD se utiliza os seguintes registradores:  WGM02,WGM01,WGM00
-    
-    WGM02,WGM01,WGM00 = 000, modo de operação TC normal
-    WGM02,WGM01,WGM00 = 001, modo de operação TC PWM fase corrigida
-    WGM02,WGM01,WGM00 = 010, modo de operação TC CTC
-    WGM02,WGM01,WGM00 = 011, modo de operação TC PWM rápido
-    
-
-    A equação da frequencia do PWM rápido é:
-     
-    f_pwm = 16MHz/(prescaler*256), usando o prescaler = 256, temos que:
-    f_pwm = 234.9624060150376 Hz,um valor acima de 100Hz e abaixo de 100Khz
-    
-    Também vamos usar a configuração não invertida, dessa forma a tensão rms
-    cresce com o valor do contatador
-
-    vamos usar o Fast PWM logo, o 3-bit do TCCRnB (WGM02) deve ser 0
-    e 1:0-bit do TCCRnB (WGM01,WGM00) = 11
-    
-    */
-
-    //         76543210
-    TCCR0A = 0b10100011;
-    //         76543210
-    TCCR0B = 0b00000100;
-
-    
-
-    /*
         PORTD 
 
         são as portas digitais do arduino de  D0 até D7
@@ -153,8 +81,7 @@ void hadware_setup()
         os bits 5 e 6 deve ser marcados como saída
     */
     //       76543210
-    DDRD = 0b01100000;
-
+    DDRD = 0b01101000;
 
     /*
         PORTB
@@ -162,12 +89,22 @@ void hadware_setup()
         Utilizado portas D9,D10,D11 como saída pwm para os leds
         PINB pinos de entrada na da porta PORTB
         D8, D9 e D10, D11 representa os bits 0,1,2,3 do registrador DDRB
+        Quero so registrados D9,D10 como saída.
 
 
      */
     //       76543210
-    DDRB = 0b00001110;   
+    DDRB = 0b00001110;
 
+    //         76543210
+    TCCR0A = 0b10100011;
+    TCCR1A = 0b10100011;
+    TCCR2A = 0b10100011;
+
+    //         76543210
+    TCCR0B = 0b00000100;
+    TCCR1B = 0b00000100;
+    TCCR2B = 0b00000100;
 }
 
 float read_heart_beat_in_millivolts()
@@ -180,6 +117,7 @@ float read_heart_beat_in_millivolts()
         externa, que será ligada ao pino AREF
         
         no caso 11, significa que ele usará a tensão interna de 1.1V como referência
+        no caso 01, significa que ele usará a tensão do Vcc (5V) como referência 
 
         o bit da posição 5 representa se o resultado do da conversão estará ajustado a direita ou a esquerda
         isso porque o resultado da conversão são 10bis e irem precisar de 2 registradores para armazena-lo
@@ -208,7 +146,7 @@ float read_heart_beat_in_millivolts()
 
         traduzindo a minha escolha para os bits fica
         76
-        00 - referência externa
+        01 - Vcc como referência 
 
         3210
         0000 -  ADC[0]
@@ -282,25 +220,52 @@ void wait_to_analogic_digital_conversion_finish()
     }
 }
 
+/*
+
+Timer output	Arduino output	Chip pin	Pin name
+    OC2B	           3           5	      PD3
+    OC0B	           5	       11	      PD5
+    OC0A	           6	       12	      PD6
+    OC1A	           9	       15	      PB1
+    OC1B	           10	       16	      PB2
+    OC2A	           11          17      	  PB3
+
+*/
+
 void write_amusing_led(float duty_cycle)
 {
 
+    /*
+    OC2B - OCR2B representa a saída do pino  D3 do arduino uno
+    */
+
+    OCR2B = (uint8_t)(duty_cycle * 255.0);
 }
 
 void write_boring_led(float duty_cycle)
 {
+    /*
+    OC0B - OCR0B representa a saída D5 do arduino uno
+    */
+    OCR0B = (uint8_t)(duty_cycle * 255.0);
 }
 
 void write_relaxing_led(float duty_cycle)
 {
+    /*
+    OC0A - OCR0A representa a saída do pino D6 do arduino uno
+    */
+    OCR0A = (uint8_t)(duty_cycle * 255.0);
 }
 
 void write_scary_led(float duty_cycle)
 {
-}
 
-void write_undefined_led(float duty_cycle)
-{
+    /*
+      OC2A - OCR2A representa a saída do pino D11
+      do arduino uno 
+    */
+    OCR2A = (uint8_t)(duty_cycle * 255.0);
 }
 
 #endif // arduino Uno
