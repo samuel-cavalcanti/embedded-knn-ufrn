@@ -27,12 +27,11 @@ int main(void)
     	Apesar dos sensores emitirem diferentes valores,
         nessa simulação são 5 potenciômetros que variam de 0 até 5V.
         Portanto para normalizar é só dividir por 5.0
-    */
+        */
         input[0] = read_heart_beat_in_millivolts() / 5.0;
         input[1] = read_blood_volume_pulse_in_percentage() / 5.0;
         input[2] = read_galvanic_skin_response_in_microsecond() / 5.0;
         input[3] = read_respiration_sensor_in_percentage() / 5.0;
-
 
         find_k_nearest(&set, input, samples, K_NEAREST);
 

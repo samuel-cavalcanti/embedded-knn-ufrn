@@ -17,3 +17,5 @@ Para executar os testes precisa-se ter instalado:
 chmod +x run_tests.sh
 ./run_tests.sh
 ```
+
+testes no tinkercad : [tinkercad.com/things/3hIv2rSv68S](https://www.tinkercad.com/things/3hIv2rSv68S)
